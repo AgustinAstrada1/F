@@ -1,40 +1,146 @@
 // ========================================
-// ELEMENTOS
+// CANVAS
 // ========================================
 
-const treeHeart =
-  document.getElementById("treeHeart");
+const treeCanvas =
+  document.getElementById("treeCanvas");
+
+const treeCtx =
+  treeCanvas.getContext("2d");
 
 
-const canvas =
-  document.getElementById("flowers");
+const petalCanvas =
+  document.getElementById("petalCanvas");
 
-
-const ctx =
-  canvas.getContext("2d");
-
-
-// ========================================
-// CONFIGURACION
-// ========================================
-
-// Cantidad de flores
-
-const FLOWER_COUNT = 3000;
-
-
-// Tamaño del corazón
-
-const HEART_SCALE = 14.5;
+const petalCtx =
+  petalCanvas.getContext("2d");
 
 
 // ========================================
-// FORMA DEL CORAZON
+// CONFIGURACIÓN
+// ========================================
+
+// Cantidad de flores.
+//
+// Ahora podemos usar muchas más porque
+// no son elementos HTML individuales.
+
+const FLOWER_COUNT = 7000;
+
+
+// ========================================
+// FLORES
+// ========================================
+
+let flowers = [];
+
+
+// ========================================
+// PETALOS
+// ========================================
+
+let petals = [];
+
+
+// ========================================
+// TAMAÑO DE PANTALLA
+// ========================================
+
+let width = window.innerWidth;
+let height = window.innerHeight;
+
+let pixelRatio =
+  Math.min(
+    window.devicePixelRatio || 1,
+    2
+  );
+
+
+// ========================================
+// AJUSTAR CANVAS
+// ========================================
+
+function resizeCanvas() {
+
+  width = window.innerWidth;
+
+  height = window.innerHeight;
+
+  pixelRatio =
+    Math.min(
+      window.devicePixelRatio || 1,
+      2
+    );
+
+
+  // Árbol
+
+  treeCanvas.width =
+    width * pixelRatio;
+
+  treeCanvas.height =
+    height * pixelRatio;
+
+  treeCanvas.style.width =
+    width + "px";
+
+  treeCanvas.style.height =
+    height + "px";
+
+
+  treeCtx.setTransform(
+    pixelRatio,
+    0,
+    0,
+    pixelRatio,
+    0,
+    0
+  );
+
+
+  // Pétalos
+
+  petalCanvas.width =
+    width * pixelRatio;
+
+  petalCanvas.height =
+    height * pixelRatio;
+
+  petalCanvas.style.width =
+    width + "px";
+
+  petalCanvas.style.height =
+    height + "px";
+
+
+  petalCtx.setTransform(
+    pixelRatio,
+    0,
+    0,
+    pixelRatio,
+    0,
+    0
+  );
+
+}
+
+
+resizeCanvas();
+
+
+window.addEventListener(
+  "resize",
+  resizeCanvas
+);
+
+
+// ========================================
+// FORMA DEL CORAZÓN
 // ========================================
 
 function heartPoint(
   t,
-  scale = 1
+  scale
 ) {
 
   const x =
@@ -70,177 +176,87 @@ function heartPoint(
 
 
 // ========================================
-// CREAR UNA FLOR
-// ========================================
-
-function createFlower(
-  x,
-  y,
-  size,
-  delay
-) {
-
-  const flower =
-    document.createElement("span");
-
-
-  flower.className =
-    "flower";
-
-
-  // ======================================
-  // TAMAÑOS
-  // ======================================
-
-  if (size <= 11) {
-
-    flower.classList.add(
-      "small"
-    );
-
-  }
-
-  else if (size >= 18) {
-
-    flower.classList.add(
-      "large"
-    );
-
-  }
-
-
-  // ======================================
-  // POSICION
-  // ======================================
-
-  flower.style.left =
-    `calc(50% + ${x}px)`;
-
-
-  flower.style.top =
-    `calc(50% + ${y}px)`;
-
-
-  // ======================================
-  // TAMAÑO
-  // ======================================
-
-  flower.style.width =
-    `${size}px`;
-
-
-  flower.style.height =
-    `${size}px`;
-
-
-  // ======================================
-  // RETRASO
-  // ======================================
-
-  flower.style.animationDelay =
-    `${delay}s, ${delay + 0.8}s`;
-
-
-  // ======================================
-  // ROTACION INICIAL
-  // ======================================
-
-  flower.style.setProperty(
-    "--rotation",
-    `${Math.random() * 360}deg`
-  );
-
-
-  treeHeart.appendChild(
-    flower
-  );
-
-}
-
-
-// ========================================
-// GENERAR FLORES
-// ========================================
-
-const flowers = [];
-
-
-// ========================================
-// GENERAMOS LOS PUNTOS
-// ========================================
-
-for (
-  let i = 0;
-  i < FLOWER_COUNT;
-  i++
-) {
-
-  // Ángulo
-
-  const angle =
-    Math.random() *
-    Math.PI *
-    2;
-
-
-  // Distribución interior
-
-  const distance =
-    Math.pow(
-      Math.random(),
-      0.75
-    ) *
-    HEART_SCALE;
-
-
-  // Punto del corazón
-
-  const point =
-    heartPoint(
-      angle,
-      distance
-    );
-
-
-  // Pequeña irregularidad
-
-  const x =
-    point.x +
-    (
-      Math.random() - 0.5
-    ) * 3;
-
-
-  const y =
-    point.y +
-    (
-      Math.random() - 0.5
-    ) * 3;
-
-
-  flowers.push({
-
-    x: x,
-
-    y: y
-
-  });
-
-}
-
-
-// ========================================
 // CREAR LAS FLORES
 // ========================================
-//
-// Las creamos progresivamente.
-//
-// Esto hace que el árbol se forme
-// delante de nuestros ojos.
-//
 
-flowers.forEach(
-  (flower, index) => {
+function generateFlowers() {
+
+  flowers = [];
+
+
+  // Adaptamos el tamaño del corazón
+  // dependiendo del dispositivo.
+
+  let heartScale;
+
+
+  if (width <= 500) {
+
+    heartScale =
+      Math.min(
+        10.5,
+        width / 37
+      );
+
+  } else {
+
+    heartScale =
+      Math.min(
+        14.5,
+        width / 38
+      );
+
+  }
+
+
+  for (
+    let i = 0;
+    i < FLOWER_COUNT;
+    i++
+  ) {
+
+    // Ángulo aleatorio
+
+    const angle =
+      Math.random() *
+      Math.PI *
+      2;
+
+
+    // Distribución dentro del corazón
+
+    const distance =
+      Math.pow(
+        Math.random(),
+        0.75
+      ) *
+      heartScale;
+
+
+    const point =
+      heartPoint(
+        angle,
+        distance
+      );
+
+
+    // Pequeña variación
+
+    const x =
+      point.x +
+      (
+        Math.random() - 0.5
+      ) * 3;
+
+
+    const y =
+      point.y +
+      (
+        Math.random() - 0.5
+      ) * 3;
+
+
+    // Tamaño
 
     let size;
 
@@ -248,13 +264,7 @@ flowers.forEach(
       Math.random();
 
 
-    // ====================================
-    // FLORES GRANDES
-    // ====================================
-
-    if (
-      random < 0.08
-    ) {
+    if (random < 0.08) {
 
       size =
         17 +
@@ -262,25 +272,13 @@ flowers.forEach(
 
     }
 
-
-    // ====================================
-    // FLORES PEQUEÑAS
-    // ====================================
-
-    else if (
-      random < 0.25
-    ) {
+    else if (random < 0.25) {
 
       size =
         7 +
         Math.random() * 4;
 
     }
-
-
-    // ====================================
-    // FLORES NORMALES
-    // ====================================
 
     else {
 
@@ -291,139 +289,481 @@ flowers.forEach(
     }
 
 
-    // ====================================
-    // APARICION PROGRESIVA
-    // ====================================
-    //
-    // Las primeras aparecen rápidamente.
-    // Las últimas tardan un poco más.
-    //
+    flowers.push({
 
-    const delay =
-      1.2 +
-      (index / FLOWER_COUNT) * 3.5;
-
-
-    createFlower(
-      flower.x,
-      flower.y,
+      x,
+      y,
       size,
-      delay
+
+      rotation:
+        Math.random() *
+        Math.PI *
+        2,
+
+      delay:
+        500 +
+        (
+          i /
+          FLOWER_COUNT
+        ) * 4000
+
+    });
+
+  }
+
+}
+
+
+// ========================================
+// GENERAR PETALOS
+// ========================================
+
+function generatePetals() {
+
+  petals = [];
+
+
+  const amount =
+    width < 600
+      ? 22
+      : 35;
+
+
+  for (
+    let i = 0;
+    i < amount;
+    i++
+  ) {
+
+    petals.push({
+
+      x:
+        Math.random() *
+        width,
+
+      y:
+        Math.random() *
+        height,
+
+      size:
+        2 +
+        Math.random() * 4,
+
+      speed:
+        0.25 +
+        Math.random() * 0.8,
+
+      drift:
+        (
+          Math.random() - 0.5
+        ) * 0.35
+
+    });
+
+  }
+
+}
+
+
+// ========================================
+// TRONCO
+// ========================================
+
+function drawTrunk(
+  progress
+) {
+
+  const centerX =
+    width / 2;
+
+
+  const treeHeight =
+    Math.min(
+      760,
+      height * 0.88
+    );
+
+
+  const trunkHeight =
+    treeHeight * 0.43;
+
+
+  const trunkWidth =
+    width < 600
+      ? 48
+      : 62;
+
+
+  const bottom =
+    height / 2 +
+    treeHeight / 2;
+
+
+  const top =
+    bottom -
+    trunkHeight *
+    progress;
+
+
+  treeCtx.save();
+
+
+  treeCtx.beginPath();
+
+
+  treeCtx.moveTo(
+    centerX -
+    trunkWidth * 0.19,
+    top
+  );
+
+
+  treeCtx.lineTo(
+    centerX +
+    trunkWidth * 0.32,
+    top
+  );
+
+
+  treeCtx.lineTo(
+    centerX +
+    trunkWidth / 2,
+    bottom
+  );
+
+
+  treeCtx.lineTo(
+    centerX -
+    trunkWidth / 2,
+    bottom
+  );
+
+
+  treeCtx.closePath();
+
+
+  const gradient =
+    treeCtx.createLinearGradient(
+      centerX -
+        trunkWidth / 2,
+      0,
+      centerX +
+        trunkWidth / 2,
+      0
+    );
+
+
+  gradient.addColorStop(
+    0,
+    "#653316"
+  );
+
+
+  gradient.addColorStop(
+    0.45,
+    "#a65b28"
+  );
+
+
+  gradient.addColorStop(
+    1,
+    "#713817"
+  );
+
+
+  treeCtx.fillStyle =
+    gradient;
+
+
+  treeCtx.fill();
+
+
+  // Detalle del tronco
+
+  treeCtx.beginPath();
+
+
+  treeCtx.ellipse(
+    centerX -
+      trunkWidth * 0.18,
+    top +
+      trunkHeight * 0.4,
+    4,
+    trunkHeight * 0.32,
+    0,
+    0,
+    Math.PI * 2
+  );
+
+
+  treeCtx.fillStyle =
+    "rgba(255,255,255,0.09)";
+
+
+  treeCtx.fill();
+
+
+  treeCtx.restore();
+
+}
+
+
+// ========================================
+// DIBUJAR UNA FLOR
+// ========================================
+
+function drawFlower(
+  flower,
+  progress
+) {
+
+  if (
+    progress <= flower.delay
+  ) {
+
+    return;
+
+  }
+
+
+  const appear =
+    Math.min(
+      1,
+      (
+        progress -
+        flower.delay
+      ) / 700
+    );
+
+
+  const scale =
+    appear;
+
+
+  const centerX =
+    width / 2;
+
+
+  const centerY =
+    height / 2 -
+    height * 0.08;
+
+
+  const x =
+    centerX +
+    flower.x;
+
+
+  const y =
+    centerY +
+    flower.y;
+
+
+  treeCtx.save();
+
+
+  treeCtx.translate(
+    x,
+    y
+  );
+
+
+  treeCtx.rotate(
+    flower.rotation
+  );
+
+
+  treeCtx.scale(
+    scale,
+    scale
+  );
+
+
+  const radius =
+    flower.size / 2;
+
+
+  // ======================================
+  // PETALOS
+  // ======================================
+
+  treeCtx.beginPath();
+
+
+  for (
+    let i = 0;
+    i < 10;
+    i++
+  ) {
+
+    const angle =
+      (
+        Math.PI * 2 / 10
+      ) * i;
+
+
+    const petalX =
+      Math.cos(angle) *
+      radius *
+      0.72;
+
+
+    const petalY =
+      Math.sin(angle) *
+      radius *
+      0.72;
+
+
+    treeCtx.moveTo(
+      petalX,
+      petalY
+    );
+
+
+    treeCtx.arc(
+      petalX,
+      petalY,
+      radius * 0.48,
+      0,
+      Math.PI * 2
     );
 
   }
-);
 
 
-// ========================================
-// PETALOS DEL FONDO
-// ========================================
-
-let petals = [];
+  treeCtx.fillStyle =
+    "#ffe64c";
 
 
-// ========================================
-// CONFIGURAR CANVAS
-// ========================================
-
-function resize() {
-
-  const ratio =
-    window.devicePixelRatio || 1;
+  treeCtx.fill();
 
 
-  canvas.width =
-    window.innerWidth *
-    ratio;
+  // ======================================
+  // CENTRO
+  // ======================================
+
+  treeCtx.beginPath();
 
 
-  canvas.height =
-    window.innerHeight *
-    ratio;
-
-
-  canvas.style.width =
-    `${window.innerWidth}px`;
-
-
-  canvas.style.height =
-    `${window.innerHeight}px`;
-
-
-  ctx.setTransform(
-    ratio,
+  treeCtx.arc(
     0,
     0,
-    ratio,
+    radius * 0.30,
     0,
-    0
+    Math.PI * 2
+  );
+
+
+  treeCtx.fillStyle =
+    "#5a3a08";
+
+
+  treeCtx.fill();
+
+
+  // ======================================
+  // BRILLO DEL CENTRO
+  // ======================================
+
+  treeCtx.beginPath();
+
+
+  treeCtx.arc(
+    -radius * 0.08,
+    -radius * 0.08,
+    radius * 0.10,
+    0,
+    Math.PI * 2
+  );
+
+
+  treeCtx.fillStyle =
+    "#ffe98a";
+
+
+  treeCtx.fill();
+
+
+  treeCtx.restore();
+
+}
+
+
+// ========================================
+// ANIMACIÓN DEL ÁRBOL
+// ========================================
+
+const startTime =
+  performance.now();
+
+
+function animateTree(
+  currentTime
+) {
+
+  const elapsed =
+    currentTime -
+    startTime;
+
+
+  treeCtx.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  // ======================================
+  // APARICION DEL TRONCO
+  // ======================================
+
+  const trunkProgress =
+    Math.min(
+      1,
+      elapsed / 1800
+    );
+
+
+  drawTrunk(
+    trunkProgress
+  );
+
+
+  // ======================================
+  // FLORES
+  // ======================================
+
+  for (
+    const flower of flowers
+  ) {
+
+    drawFlower(
+      flower,
+      elapsed
+    );
+
+  }
+
+
+  requestAnimationFrame(
+    animateTree
   );
 
 }
 
 
-resize();
-
-
-window.addEventListener(
-  "resize",
-  resize
-);
-
-
 // ========================================
-// CREAR PETALOS
+// ANIMACIÓN DE PETALOS
 // ========================================
 
-for (
-  let i = 0;
-  i < 35;
-  i++
-) {
+function animatePetals() {
 
-  petals.push({
-
-    x:
-      Math.random() *
-      window.innerWidth,
-
-
-    y:
-      Math.random() *
-      window.innerHeight,
-
-
-    size:
-      2 +
-      Math.random() * 4,
-
-
-    speed:
-      0.25 +
-      Math.random() * 0.8,
-
-
-    drift:
-      (
-        Math.random() - 0.5
-      ) * 0.35
-
-  });
-
-}
-
-
-// ========================================
-// ANIMACION DE PETALOS
-// ========================================
-
-function animate() {
-
-  ctx.clearRect(
+  petalCtx.clearRect(
     0,
     0,
-    window.innerWidth,
-    window.innerHeight
+    width,
+    height
   );
 
 
@@ -431,23 +771,17 @@ function animate() {
     const petal of petals
   ) {
 
-    // Movimiento vertical
-
     petal.y +=
       petal.speed;
 
-
-    // Movimiento lateral
 
     petal.x +=
       petal.drift;
 
 
-    // Si sale de la pantalla
-
     if (
       petal.y >
-      window.innerHeight + 10
+      height + 10
     ) {
 
       petal.y = -10;
@@ -455,47 +789,49 @@ function animate() {
 
       petal.x =
         Math.random() *
-        window.innerWidth;
+        width;
 
     }
 
 
-    // ====================================
-    // DIBUJAR PETALO
-    // ====================================
-
-    ctx.beginPath();
+    petalCtx.beginPath();
 
 
-    ctx.arc(
-
+    petalCtx.arc(
       petal.x,
-
       petal.y,
-
       petal.size,
-
       0,
-
       Math.PI * 2
-
     );
 
 
-    ctx.fillStyle =
+    petalCtx.fillStyle =
       "rgba(247, 193, 0, .65)";
 
 
-    ctx.fill();
+    petalCtx.fill();
 
   }
 
 
   requestAnimationFrame(
-    animate
+    animatePetals
   );
 
 }
 
 
-animate();
+// ========================================
+// INICIAR
+// ========================================
+
+generateFlowers();
+
+generatePetals();
+
+animateTree(
+  performance.now()
+);
+
+animatePetals();

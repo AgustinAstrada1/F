@@ -25,7 +25,7 @@ const petalCtx =
 // Ahora podemos usar muchas más porque
 // no son elementos HTML individuales.
 
-const FLOWER_COUNT = 3000;
+const FLOWER_COUNT = 1200;
 
 
 // ========================================

@@ -12,54 +12,19 @@
   <title>💛</title>
 
   <link rel="stylesheet" href="style.css">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-
-  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
-  >
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap"
-    rel="stylesheet"
-  >
 </head>
-
 
 <body>
 
   <div class="scene">
 
-    <!-- Pétalos que caen -->
-    <canvas id="flowers"></canvas>
+    <!-- Canvas donde se dibuja todo el árbol -->
+    <canvas id="treeCanvas"></canvas>
 
-
-    <!-- Árbol -->
-    <main class="tree-container">
-
-      <section
-        class="tree-area"
-        aria-label="Árbol de flores amarillas"
-      >
-
-        <!-- Copa -->
-        <div
-          class="tree-heart"
-          id="treeHeart"
-        ></div>
-
-
-        <!-- Tronco -->
-        <div class="trunk"></div>
-
-      </section>
-
-    </main>
+    <!-- Canvas de los pétalos -->
+    <canvas id="petalCanvas"></canvas>
 
   </div>
-
 
   <script src="script.js"></script>
 

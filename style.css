@@ -1,0 +1,582 @@
+/* ========================================
+   VARIABLES
+======================================== */
+
+:root {
+  --cream: #f7eee7;
+  --yellow: #ffd21c;
+  --yellow-light: #ffe64c;
+  --yellow-dark: #eeb700;
+
+  --trunk-dark: #653316;
+  --trunk-light: #a65b28;
+}
+
+
+/* ========================================
+   RESET
+======================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+
+  margin: 0;
+  padding: 0;
+}
+
+
+body {
+  overflow: hidden;
+
+  background: var(--cream);
+}
+
+
+/* ========================================
+   ESCENA
+======================================== */
+
+.scene {
+
+  position: relative;
+
+  width: 100%;
+  height: 100vh;
+
+  overflow: hidden;
+
+  background:
+
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(255, 220, 60, 0.10),
+      transparent 35%
+    ),
+
+    var(--cream);
+}
+
+
+/* ========================================
+   CANVAS DE PETALOS
+======================================== */
+
+#flowers {
+
+  position: fixed;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  pointer-events: none;
+
+  z-index: 1;
+}
+
+
+/* ========================================
+   CONTENEDOR DEL ARBOL
+======================================== */
+
+.tree-container {
+
+  position: relative;
+
+  z-index: 2;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+}
+
+
+/* ========================================
+   AREA DEL ARBOL
+======================================== */
+
+.tree-area {
+
+  position: relative;
+
+  width: min(700px, 72vw);
+
+  height: min(760px, 88vh);
+
+  animation:
+    treeEntrance 2.2s ease-out forwards;
+
+}
+
+
+/* ========================================
+   ANIMACION DE ENTRADA DEL ARBOL
+======================================== */
+
+@keyframes treeEntrance {
+
+  0% {
+
+    opacity: 0;
+
+    transform:
+      translateY(35px)
+      scale(0.88);
+
+  }
+
+
+  60% {
+
+    opacity: 1;
+
+  }
+
+
+  100% {
+
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+
+  }
+
+}
+
+
+/* ========================================
+   CORAZON
+======================================== */
+
+.tree-heart {
+
+  position: absolute;
+
+  left: 50%;
+  top: 5%;
+
+  width: 100%;
+  height: 72%;
+
+  transform: translateX(-50%);
+
+  overflow: visible;
+
+  filter:
+    drop-shadow(
+      0 8px 9px
+      rgba(120, 80, 0, 0.10)
+    );
+}
+
+
+/* ========================================
+   FLORES
+======================================== */
+
+.flower {
+
+  position: absolute;
+
+  display: block;
+
+  border-radius: 50%;
+
+  background:
+
+    radial-gradient(
+      circle,
+
+      #513507 0 17%,
+
+      #ffdf20 19% 60%,
+
+      #eeb700 62% 100%
+    );
+
+  box-shadow:
+
+    0 0 4px
+    rgba(210, 160, 0, 0.40);
+
+
+  /*
+    La flor comienza invisible
+    y aparece progresivamente.
+  */
+
+  opacity: 0;
+
+  transform:
+    scale(0.15)
+    rotate(0deg);
+
+
+  animation:
+
+    flowerAppear
+    1.4s
+    cubic-bezier(.2,.8,.2,1)
+    forwards,
+
+    flowerSway
+    3s
+    ease-in-out
+    infinite
+    alternate;
+
+
+  transform-origin: center;
+}
+
+
+/* ========================================
+   PETALOS DE CADA FLOR
+======================================== */
+
+.flower::before,
+.flower::after {
+
+  content: "";
+
+  position: absolute;
+
+  inset: -2px;
+
+  border-radius: 50%;
+
+  background:
+
+    conic-gradient(
+
+      from 0deg,
+
+      transparent 0 8%,
+
+      #ffe64c 8% 18%,
+
+      transparent 18% 28%,
+
+      #ffe64c 28% 38%,
+
+      transparent 38% 48%,
+
+      #ffe64c 48% 58%,
+
+      transparent 58% 68%,
+
+      #ffe64c 68% 78%,
+
+      transparent 78% 88%,
+
+      #ffe64c 88% 98%,
+
+      transparent 98%
+
+    );
+}
+
+
+/* ========================================
+   FLORES PEQUEÑAS
+======================================== */
+
+.flower.small {
+
+  filter:
+    brightness(0.98);
+}
+
+
+/* ========================================
+   FLORES GRANDES
+======================================== */
+
+.flower.large {
+
+  filter:
+    brightness(1.04);
+
+  box-shadow:
+
+    0 0 6px
+    rgba(220, 170, 0, 0.45);
+}
+
+
+/* ========================================
+   APARICION DE LAS FLORES
+======================================== */
+
+@keyframes flowerAppear {
+
+  0% {
+
+    opacity: 0;
+
+    transform:
+      scale(0.1)
+      rotate(-25deg);
+
+  }
+
+
+  55% {
+
+    opacity: 0.85;
+
+  }
+
+
+  100% {
+
+    opacity: 1;
+
+    transform:
+      scale(1)
+      rotate(0deg);
+
+  }
+
+}
+
+
+/* ========================================
+   MOVIMIENTO DE LAS FLORES
+======================================== */
+
+@keyframes flowerSway {
+
+  0% {
+
+    margin-top: 0;
+
+  }
+
+
+  100% {
+
+    margin-top: -2px;
+
+  }
+
+}
+
+
+/* ========================================
+   TRONCO
+======================================== */
+
+.trunk {
+
+  position: absolute;
+
+  left: 50%;
+  bottom: 2%;
+
+  width: 62px;
+  height: 43%;
+
+  transform:
+    translateX(-50%)
+    scaleY(0);
+
+  transform-origin: bottom center;
+
+  background:
+
+    linear-gradient(
+      90deg,
+
+      var(--trunk-dark),
+
+      var(--trunk-light) 45%,
+
+      #713817
+    );
+
+
+  clip-path:
+
+    polygon(
+      38% 0,
+      65% 0,
+      100% 100%,
+      0 100%
+    );
+
+
+  border-radius: 5px;
+
+
+  animation:
+
+    trunkAppear
+    1.8s
+    cubic-bezier(.2,.8,.2,1)
+    forwards;
+
+
+  z-index: 0;
+}
+
+
+/* ========================================
+   DETALLE DEL TRONCO
+======================================== */
+
+.trunk::after {
+
+  content: "";
+
+  position: absolute;
+
+  left: 10px;
+  top: 12%;
+
+  width: 8px;
+  height: 75%;
+
+  background:
+    rgba(255,255,255,0.09);
+
+  border-radius: 50%;
+}
+
+
+/* ========================================
+   APARICION DEL TRONCO
+======================================== */
+
+@keyframes trunkAppear {
+
+  0% {
+
+    transform:
+      translateX(-50%)
+      scaleY(0);
+
+  }
+
+
+  100% {
+
+    transform:
+      translateX(-50%)
+      scaleY(1);
+
+  }
+
+}
+
+
+/* ========================================
+   CELULAR
+======================================== */
+
+@media (max-width: 800px) {
+
+  body {
+    overflow: hidden;
+  }
+
+
+  .scene {
+
+    width: 100vw;
+    height: 100dvh;
+
+  }
+
+
+  .tree-container {
+
+    padding: 5px;
+
+    align-items: center;
+
+  }
+
+
+  .tree-area {
+
+    width: 100vw;
+
+    height: 82dvh;
+
+    max-width: 600px;
+
+    max-height: 720px;
+
+  }
+
+
+  .tree-heart {
+
+    top: 4%;
+
+    width: 94%;
+
+    height: 70%;
+
+  }
+
+
+  .trunk {
+
+    width: 48px;
+
+    height: 42%;
+
+    bottom: 3%;
+
+  }
+
+}
+
+
+/* ========================================
+   CELULARES PEQUEÑOS
+======================================== */
+
+@media (max-width: 400px) {
+
+  .tree-area {
+
+    height: 78dvh;
+
+  }
+
+
+  .tree-heart {
+
+    width: 100%;
+
+    height: 68%;
+
+  }
+
+
+  .trunk {
+
+    width: 43px;
+
+  }
+
+}
